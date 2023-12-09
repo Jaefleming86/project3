@@ -26,6 +26,23 @@ output "group_membership_details" {
   value = { for k, v in aws_iam_group_membership.group_membership : k => { "group" = v.group, "users" = v.users } }
 }
 
-output "aws_iam_access_key_metadata" {
-  value = { for k, v in aws_iam_access_key.access_key : k => { "user" = v.user, "creation_date" = v.create_date } }
+output "kms_key_arn" {
+  value = aws_kms_key.iam_key.arn
+  description = "The ARN of the KMS key used for encryption."
 }
+
+output "secrets_manager_secret_arn" {
+  value = aws_secretsmanager_secret.test.arn
+  description = "The ARN of the Secrets Manager secret."
+}
+
+output "secrets_manager_secret_name" {
+  value = aws_secretsmanager_secret.test.name
+  description = "The name of the Secrets Manager secret."
+}
+
+output "iam_user_login_profiles" {
+  value = { for u in aws_iam_user.user : u.name => lookup(aws_iam_user_login_profile.user_login[u.name], "encrypted_password", null) }
+  description = "Encrypted login profile passwords for IAM users."
+}
+
